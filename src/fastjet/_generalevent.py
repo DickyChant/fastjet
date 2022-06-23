@@ -581,6 +581,33 @@ class _classgeneralevent:
             )
         res = ak.Array(self._replace_multi())
         return res
+    
+    def inclusive_jets_softdrop(self,min_pt,z_cut,beta):
+        self.out = []
+        self._input_flag = 0
+        for i in range(len(self._clusterable_level)):
+            np_results = self._results[i].to_numpy_softdrop(min_pt,z_cut,beta)
+            of = np.insert(np_results[-1], len(np_results[-1]), len(np_results[0]))
+            self._out.append(
+                ak.Array(
+                    ak.layout.ListOffsetArray64(
+                        ak.layout.Index64(of),
+                        ak.layout.RecordArray(
+                            (
+                                ak.layout.NumpyArray(np_results[0]),
+                                ak.layout.NumpyArray(np_results[1]),
+                                ak.layout.NumpyArray(np_results[2]),
+                                ak.layout.NumpyArray(np_results[3]),
+                            ),
+                            ("px", "py", "pz", "E"),
+                            parameters={"__record__": "Momentum4D"},
+                        ),
+                    ),
+                    behavior=self.data.behavior,
+                )
+            )
+        res = ak.Array(self._replace_multi())
+        return res
 
     def constituents(self, min_pt):
         self._out = []

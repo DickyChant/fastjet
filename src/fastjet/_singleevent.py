@@ -81,6 +81,23 @@ class _classsingleevent:
             ),
             behavior=self.data.behavior,
         )
+    def inclusive_jets_softdrop(self, min_pt, z_cut, beta):
+        np_results = self._results.to_numpy_softdrop(min_pt,z_cut,beta)
+        return ak.Array(
+            ak.layout.RecordArray(
+                (
+                    ak.layout.NumpyArray(np_results[0]),
+                    ak.layout.NumpyArray(np_results[1]),
+                    ak.layout.NumpyArray(np_results[2]),
+                    ak.layout.NumpyArray(np_results[3]),
+                ),
+                ("px", "py", "pz", "E"),
+                parameters={"__record__": "Momentum4D"},
+            ),
+            behavior=self.data.behavior,
+        )
+        
+    
 
     def unclustered_particles(self):
         np_results = self._results.to_numpy_unclustered_particles()

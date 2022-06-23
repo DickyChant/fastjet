@@ -30,7 +30,7 @@ FASTJET = DIR / "fastjet-core"
 PYTHON = DIR / "src/fastjet"
 OUTPUT = PYTHON / "_fastjet_core"
 
-LIBS = ["fastjet", "fastjettools", "siscone", "siscone_spherical", "fastjetplugins"]
+LIBS = ["fastjet", "fastjettools", "siscone", "siscone_spherical", "fastjetplugins","fastjetcontribfragile"]
 
 
 def get_version() -> str:
@@ -79,8 +79,17 @@ class FastJetBuild(setuptools.command.build_ext.build_ext):
 
             env = os.environ.copy()
             env["ORIGIN"] = "$ORIGIN"  # if evaluated, it will still be '$ORIGIN'
-            subprocess.run(["make", "-j"], cwd=FASTJET, env=env, check=True)
+            subprocess.run(["make", "-j20"], cwd=FASTJET, env=env, check=True)
             subprocess.run(["make", "install"], cwd=FASTJET, env=env, check=True)
+            
+            subprocess.run(["wget",r"http://fastjet.hepforge.org/contrib/downloads/fjcontrib-1.048.tar.gz"],cwd=FASTJET,env=env,check=True)
+            subprocess.run(["tar", "xf","fjcontrib-1.048.tar.gz"],cwd=FASTJET,env=env,check=True)
+
+            fj_contrib_dir = FASTJET / "fjcontrib-1.048"
+            subprocess.run(["./configure","--fastjet-config=" + str(OUTPUT / "bin/fastjet-config")],cwd=fj_contrib_dir,env=env,check=True)
+            subprocess.run(["make","-j20"],cwd=fj_contrib_dir,env=env,check=True)
+            subprocess.run(["make","install"],cwd=fj_contrib_dir,env=env,check=True)       
+            subprocess.run(["make","fragile-shared-install"],cwd=fj_contrib_dir,env=env,check=True)       
 
         setuptools.command.build_ext.build_ext.build_extensions(self)
 
