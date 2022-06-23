@@ -190,6 +190,9 @@ class AwkwardClusterSequence(ClusterSequence):
 
     def inclusive_jets(self, min_pt=0):
         return self._internalrep.inclusive_jets(min_pt)
+    
+    def inclusive_jets_softdrop(self, min_pt=0, z_cut=0,beta=0):
+        return self._internalrep.inclusive_jets_softdrop(min_pt,z_cut,beta)
 
     def unclustered_particles(self):
         return self._internalrep.unclustered_particles()
